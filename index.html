@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Farm Builder Lite</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-container">
+    <h1 id="farm-name">Your Farm</h1>
+    <div id="money">💰 $0</div>
+    <button onclick="setFarmName()">Name Your Farm</button>
+    <div class="grid">
+      <!-- 5 Plots -->
+      <div class="plot" onclick="build(0)"></div>
+      <div class="plot" onclick="build(1)"></div>
+      <div class="plot" onclick="build(2)"></div>
+      <div class="plot" onclick="build(3)"></div>
+      <div class="plot" onclick="build(4)"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
