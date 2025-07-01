@@ -1,4 +1,4 @@
-let money = 0;
+let money = 100;
 let farmName = localStorage.getItem('farmName') || "Your Farm";
 let plots = JSON.parse(localStorage.getItem("plots")) || [
   null, null, null, null, null
