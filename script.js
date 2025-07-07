@@ -1,82 +1,73 @@
+const config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  backgroundColor: '#a3d9a5',
+  parent: 'game',
+  scene: {
+    preload,
+    create,
+    update
+  },
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  }
+};
+
+const game = new Phaser.Game(config);
+
 let money = 100;
-let farmName = localStorage.getItem('farmName') || "Your Farm";
-let plots = JSON.parse(localStorage.getItem("plots")) || [
-  null, null, null, null, null
-];
+let selectedBuilding = null;
+const tileSize = 64;
+const gridWidth = 10;
+const gridHeight = 8;
+let gridGroup;
+let buildings = [];
 
-document.getElementById("farm-name").innerText = farmName;
-document.getElementById("money").innerText = `💰 $${money}`;
-
-function setFarmName() {
-  const name = prompt("Name your farm:");
-  if (name) {
-    farmName = name;
-    document.getElementById("farm-name").innerText = name;
-    localStorage.setItem("farmName", name);
-  }
+function preload() {
+  this.load.image('tile', 'https://opengameart.org/sites/default/files/tile_grass_0.png');
+  this.load.image('coop', 'https://opengameart.org/sites/default/files/chicken_coop_icon.png');
+  this.load.image('garden', 'https://opengameart.org/sites/default/files/garden_icon.png');
 }
 
-function build(index) {
-  if (!plots[index]) {
-    const choice = prompt("Build what? (1: Chicken Coop - $50, 2: Garden Patch - $75)");
-    if (choice === "1" && money >= 50) {
-      plots[index] = { type: "coop", level: 1, name: prompt("Name your chicken:") || "Henrietta" };
-      money -= 50;
-    } else if (choice === "2" && money >= 75) {
-      plots[index] = { type: "garden", level: 1 };
-      money -= 75;
-    } else {
-      alert("Not enough money!");
-      return;
-    }
-  } else {
-    // Upgrade
-    const upgradeCost = plots[index].level * 100;
-    if (money >= upgradeCost) {
-      plots[index].level++;
-      money -= upgradeCost;
-      alert(`${plots[index].type === "coop" ? plots[index].name : "Patch"} upgraded!`);
-    } else {
-      alert("Not enough money to upgrade.");
+function create() {
+  gridGroup = this.add.group();
+  for (let y = 0; y < gridHeight; y++) {
+    for (let x = 0; x < gridWidth; x++) {
+      const tile = this.add.image(
+        (x - y) * tileSize / 2 + 400,
+        (x + y) * tileSize / 4 + 50,
+        'tile'
+      ).setInteractive();
+      tile.setData({ x, y, built: false });
+      tile.on('pointerdown', () => placeBuilding(this, tile));
+      gridGroup.add(tile);
     }
   }
-  saveGame();
-  render();
+  updateMoney();
 }
 
-function render() {
-  document.getElementById("money").innerText = `💰 $${money}`;
-  const plotEls = document.querySelectorAll(".plot");
-  plots.forEach((plot, i) => {
-    const el = plotEls[i];
-    if (!plot) {
-      el.className = "plot";
-      el.innerText = "Empty";
-    } else {
-      el.className = "plot built";
-      if (plot.level > 1) el.classList.add("upgraded");
-      el.innerText =
-        plot.type === "coop"
-          ? `${plot.name} (Lvl ${plot.level})`
-          : `Garden (Lvl ${plot.level})`;
-    }
-  });
+function update() {}
+
+function placeBuilding(scene, tile) {
+  if (!selectedBuilding || tile.getData('built')) return;
+  let cost = selectedBuilding === 'coop' ? 50 : 75;
+  if (money < cost) return;
+
+  const building = scene.add.image(tile.x, tile.y - 20, selectedBuilding);
+  building.setScale(0.6);
+  tile.setData('built', true);
+  buildings.push({ tile, type: selectedBuilding });
+
+  money -= cost;
+  updateMoney();
 }
 
-function tick() {
-  plots.forEach((plot) => {
-    if (!plot) return;
-    const rate = plot.type === "coop" ? 2 : 3;
-    money += plot.level * rate;
-  });
-  render();
-  saveGame();
+function selectBuilding(type) {
+  selectedBuilding = type;
 }
 
-function saveGame() {
-  localStorage.setItem("plots", JSON.stringify(plots));
+function updateMoney() {
+  document.getElementById('money').textContent = money;
 }
-
-// Start ticking income every second
-setInterval(tick, 1000);
-render();
