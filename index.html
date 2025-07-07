@@ -2,25 +2,22 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Farm Builder Lite</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Isometric Farm Builder</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="game-container">
-    <h1 id="farm-name">Your Farm</h1>
-    <div id="money">💰 $100</div>
-    <button onclick="setFarmName()">Name Your Farm</button>
-    <div class="grid">
-      <!-- 5 Plots -->
-      <div class="plot" onclick="build(0)"></div>
-      <div class="plot" onclick="build(1)"></div>
-      <div class="plot" onclick="build(2)"></div>
-      <div class="plot" onclick="build(3)"></div>
-      <div class="plot" onclick="build(4)"></div>
+  <div id="ui">
+    <h1 id="farm-name">Unnamed Farm</h1>
+    <div id="resources">Money: $<span id="money">100</span></div>
+    <div id="build-menu">
+      <button onclick="selectBuilding('coop')">Build Chicken Coop ($50)</button>
+      <button onclick="selectBuilding('garden')">Build Garden Patch ($75)</button>
     </div>
   </div>
+  <canvas id="game"></canvas>
 
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
